@@ -1,0 +1,36 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+void output(string description){
+    cout << description;
+}
+
+void output(long double description){
+    cout << description;
+}
+
+void input(double& num, string description){
+    output(description);
+    cin >> num;
+}
+
+long double rectangle(double step, double upper, border lower){
+    double iterator = (upper - lower) / step; // считаем количество итераций
+    long double answer = 0;
+    for (int i = 1; i <= iterator; i++){
+        answer += step * asin(upper + step * (i / 2));
+    }
+    return (answer);
+}
+
+int main()
+{
+    setlocale(LC_ALL, "Russian");
+    double step, borderUpper, borderLower;
+    input(step, "Введите шаг: ");
+    input(borderUpper, "Введите верхнюю границу: ");
+    input(borderLower, "Введите нижнюю границу: ");
+    output(rectangle(step, borderUpper, borderLower));
+}
