@@ -1,0 +1,224 @@
+#include <iostream>
+#include <math.h>
+#include"IAP.h"
+#include"Time.h"
+#include<sstream>
+#include"Fraction.h"
+#include"Money.h"
+#include"SafeArray.h"
+#include"Polar.h"
+#include"Sterling.h"
+
+using namespace std;  // ПРОЙДИ ПО КОДУ И ПРОЧИТАЙ ВСЕ КОММЕНТАРИИ!!!
+
+namespace std {
+	string to_string(Time& time) {
+		stringstream sstr;
+		sstr << time.getHours() << ':' << time.getMin() << ':' << time.getSec();
+		return sstr.str();
+	}
+}
+
+Time timeInput() {
+	Time tt;
+	while (1) {
+		try {
+			tt = tt.inputT();
+		}
+		catch (string a) {
+			output(a);
+			continue;
+		}
+		break;
+	}
+	return tt;
+}
+
+
+int menu() {
+	int WorkNumber;
+	Time temp;
+	Time tt;
+	Money m1, m2;
+	while (1) {
+		clean();
+		cout << "Введённое время: " << to_string(tt) << endl << endl
+			<< "1. Ввод нового времени\n"
+			<< "2. Префиксный инкремент\n"
+			<< "3. Постфиксный инкремент\n"
+			<< "4. Префиксный декримент\n"
+			<< "5. Постфиксный декремент\n"
+			<< "6. Вычетание времени \n"
+			<< "7. Вычетание секунд\n"
+			<< "8. Прибавление времени\n"
+			<< "9. Прибавление секунд\n"
+			<< "10. Умножение времени на число\n"
+			<< "11. Равенство/неравенство дробей\n"
+			<< "12. Сокращение дроби\n"
+			<< "13. Сложение объектов класса Money\n"
+			<< "14. Вычетание объектов класса Money\n"
+			<< "15. Умножение объектов класса Money\n"
+			<< "16. Деление объектов класса Money\n"
+			<< "17 Установка границ массива\n"
+			<< "18. Полярные координаты\n"
+			<< "19. Перевод стерлингов в double\n"
+			<< "20. Перевод стерлингов в доллары\n"
+			<< "Выберете номер желаемой работы или любой иной символ для завершения работы: ";
+		cin >> WorkNumber;
+		switch (WorkNumber)
+		{
+		case 1:
+			tt = timeInput();
+			tt.outputT();
+			break;
+		case 2:
+			temp = ++tt;
+			output(to_string(tt));
+			output(to_string(temp));
+			break;
+		case 3:
+			temp = tt++;
+			tt.outputT();
+			temp.outputT();
+			break;
+		case 4:
+			temp = --tt;
+			tt.outputT();
+			temp.outputT();
+			break;
+		case 5:
+			temp = tt--;
+			tt.outputT();
+			temp.outputT();
+			clean();
+			break;
+		case 6:
+			temp = timeInput();
+			tt = tt - temp;
+			tt.outputT();
+			break;
+		case 7:
+			{
+				int sec; 
+				input(sec, "Введите секунды");
+				tt = tt - sec;
+			}
+			tt.outputT();
+			break;
+		case 8:
+			temp = timeInput();
+			tt = tt + temp;
+			tt.outputT();
+			break;
+		case 9:
+			{
+				int sec;
+				input(sec, "Введите секунды");
+				tt = tt + sec;
+			}
+			tt.outputT();
+			break;
+		case 10:
+			{
+				int arg;
+				input(arg, "Введите число");
+				tt = tt * arg;
+			}
+			tt.outputT();
+			break;
+		case 11:
+			{
+				output("Первая дробь: \n");
+				Fraction Fraction1 = Fraction1.Inputf();
+				output("Вторая дробь: \n");
+				Fraction Fraction2 = Fraction2.Inputf();
+				if (Fraction1 == Fraction2) 
+					output("Равны");
+				else
+					output("Неравны");
+			}
+			break;
+		case 12:
+			{
+				Fraction f(6, 8);
+				f.Cut();
+				f.print();
+			}
+			break;
+		case 13:
+			m1.moneyInput();
+			m2.moneyInput();
+			output(m1 + m2);
+			break;
+		case 14:
+			m1.moneyInput();
+			m2.moneyInput();
+			output(m1 - m2);
+			break;
+		case 15:
+			m1.moneyInput();
+			m2.moneyInput();
+			output(m1 * m2);
+			break;
+		case 16:
+			m1.moneyInput();
+			m2.moneyInput();
+			output(m1 / m2);
+			break;
+		case 17:
+			{
+				int max_bound, min_bound, value, index;
+				input(min_bound, "Введите нижнюю границу массива");
+				input(max_bound, "Введите верхнюю границу массива");
+				input(value, "Введите число для заполнения массива");
+				try {
+					SafeArray sa(min_bound, max_bound, value);
+					input(index, "Введите индекс числа");
+					output(sa[index]);
+				}
+				catch (string a) {
+					output(a);
+				}
+			}
+			break;
+		case 18:
+			{
+				double angle, R = 0;
+				output("Первая координата:\n");
+				input(angle, "Введите угол: ");
+				input(R, "Введите радиус: ");
+				Polar p(angle, R);
+				output("Вторая координата:\n");
+				input(angle, "Введите угол: ");
+				input(R, "Введите радиус: ");
+				Polar p2(angle, R);
+				p = p + p2;
+				output(p.toStr());
+			}
+		case 19:
+			{
+				Sterling s;
+				s.getSterling();
+				double something = s;
+				output(double(s));
+			}
+			break;
+		case 20:
+			{
+				Sterling s;
+				Money m;
+				s.getSterling();
+				m.num = s.toMoney();
+				output(m.toStr());
+			}
+		default:
+			return 0;
+		}
+	}
+}
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	menu();
+}
