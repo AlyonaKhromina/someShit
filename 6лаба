@@ -1,0 +1,453 @@
+#include<string>
+#include <iostream>
+#include<sstream>
+#include<iomanip>
+
+using namespace std;
+
+const int maxArray = 2;
+const int maxMatrix = 10;
+const int maxmatrixX = 10;
+const int maxMatrixY = 10;
+
+
+void output(string myOutput) {
+	cout << myOutput << endl;
+}
+
+void output(int myOutput) {
+	cout << myOutput << endl;
+}
+
+void output(double myOutput) {
+	cout << myOutput << endl;
+}
+
+void output(float myOutput) {
+	cout << myOutput << endl;
+}
+
+int input(int myInput, string description) {
+	output(description);
+	cin >> myInput;
+	return myInput;
+}
+
+float input(float myInput, string description) {
+	output(description);
+	cin >> myInput;
+	return myInput;
+}
+
+char input(char myInput, string description) {
+	output(description);
+	cin >> myInput;
+	return myInput;
+}
+
+string input(string myInput, string description) {
+	output(description);
+	cin >> myInput;
+	return myInput;
+}
+
+void clean()
+{
+	system("pause");
+	system("cls");
+}
+
+class Fraction
+{
+public:
+	int chisl, znam;
+
+	Fraction() : chisl(0), znam(0) {}
+	Fraction(int i, int l) :  chisl(i), znam(l) {}
+
+	int* fractionInput()
+	{
+		int f[2];
+		f[0] = input(f[0], "Введите числитель дроби");
+		f[1] = input(f[1], "Введите знаменатель дроби");
+		return f;
+	}
+
+	Fraction fractionSumm(int chisl1, int znam1, int chisl2, int znam2)
+	{
+		Fraction temp;
+		temp.chisl = (chisl1 * znam2) + (znam1 * chisl2);
+		temp.znam = znam1 * znam2;
+		return temp;
+	}
+
+	Fraction fractionSubstract(int chisl1, int znam1, int chisl2, int znam2) {
+		Fraction temp;
+		temp.chisl = (chisl1 * znam2) - (znam1 * chisl2);
+		temp.znam = znam1 * znam2;
+		return temp;
+	}
+
+	Fraction fractionMultiply(int chisl1, int znam1, int chisl2, int znam2) {
+		Fraction temp;
+		temp.chisl = chisl1 * chisl2;
+		temp.znam = znam1 * znam2;
+		return temp;
+	}
+
+	Fraction fractionDivinde(int chisl1, int znam1, int chisl2, int znam2) {
+		Fraction temp;
+		temp.chisl = chisl1 * znam2;
+		temp.znam = znam1 * chisl2;
+		return temp;
+	}
+
+	void printFraction(Fraction answer)
+	{
+		cout << answer.chisl << "/" << answer.znam << endl;
+	}
+
+	Fraction AVG(Fraction array[]) {
+		Fraction toReturn;
+		int temp[2];
+		toReturn.chisl = array[0].chisl;
+		toReturn.znam = array[0].znam;
+		for (int index = 1; index < maxArray; index++) {
+				toReturn = fractionSumm(toReturn.chisl, toReturn.znam, array[index].chisl, array[index].znam);
+		}
+		toReturn = fractionDivinde(toReturn.chisl, toReturn.znam, maxArray, 1);
+		return toReturn;
+	}
+};
+
+Fraction* createArray() {
+	Fraction array[maxArray];
+	Fraction container;
+	for (int index = 0; index < maxArray; index++) {
+		container.chisl = input(container.chisl, "Введите числитель");
+		container.znam = input(container.znam, "Введите  знаментель");
+		array[index] = container;
+	}
+	return array;
+}
+
+class Money {
+private:
+	string money;
+	char c;
+	long double num;
+public:
+	void moneyInput() {
+		money = input(money, "Введите значиение: ");
+	}
+
+	double moneyStrDouble() {
+		string buf;
+		int temp = 0;
+		string s = "";
+		for (int y = 0; y < money.length(); y++) {
+			buf = money[y];
+			if (buf != "," and buf != "$") {
+				s += buf;
+			}
+			else
+				temp++;
+		}	
+		stringstream sstr;
+		sstr << s;
+		sstr >> num;
+		cout << fixed << setprecision(2) << num << endl;
+		return num;
+	}
+
+	string ldtoms(long double money) {
+		stringstream strstream;
+		stringstream strstreamToReturn;
+		strstreamToReturn << "$";
+		string strMoney;
+		bool in_begin = true;
+		string buf;
+		strstream << money;
+		for (int counter = 0; counter < strMoney.length(); counter++) {
+			buf = strMoney[counter];
+			if (buf == "0" && in_begin == true) {
+				continue;
+			}
+			else {
+				in_begin = false;
+				strstream << strMoney[counter];
+			}
+
+		}
+		strMoney = strstream.str();
+		int value = 0;
+		for (int count = 0; count < strMoney.length(); count++) {
+			strstreamToReturn << strMoney[count];
+			value += 1;
+			if (value == 3 && strMoney[count + 1] != '\0') {
+				value = 0;
+				strstreamToReturn << ",";
+			}
+		}
+		return strstreamToReturn.str();
+	}
+
+	string madd() {
+		double double_num1, double_num2;
+		moneyInput();
+		double_num1 = moneyStrDouble();
+		moneyInput();
+		double_num2 = moneyStrDouble();
+		return ldtoms(double_num1 + double_num2);
+	}
+};
+
+
+
+class SafeArray {
+	int size;
+	int array[maxArray];
+public:
+	SafeArray(int size, int num) {
+		if (size > maxArray)
+			size = maxArray;
+		else
+			size = size;
+		for (int i = 0; i < size; ++i)
+			array[i] = num;
+	}
+
+	int getel(int size) {
+		if (size < 0) {
+			cout << "Значение меньше 0" << endl;
+			return 0;
+		}
+		else if (size < size) {
+			return array[size];
+		}
+		else {
+			cout << "Выход за пределы массива" << endl;
+			return 0;
+		}
+	}
+
+	void putel(int size, int num) {
+		if (size < 0)
+			cout << "Значение меньше 0" << endl;
+		else if (size < size) {
+			array[size] = num;
+		}
+		else
+			std::cout << "Выход за пределы массива" << endl;
+	}
+};
+
+class Queue {
+private:
+	int myQueue[maxArray];
+	int head = 0, tail = 0, add_opetations_value = 0, del_opetations_value = 0;
+
+	void inputArg() {
+		arg = 10;
+
+	}
+
+	void headAndTailCheck() {
+		if (head == maxArray)
+			head = 0;
+		if (tail == maxArray)
+			tail = 0;
+	}
+
+	int fullOrEmpty() {
+		if (add_opetations_value == del_opetations_value) {
+			cout << "Очередь пуста";
+			return 1;
+		}
+		else if (add_opetations_value - maxArray == del_opetations_value) {
+			cout << "Очередь переполнена";
+			return 2;
+		}
+		else
+			return 0;
+	}
+
+public:
+	int arg;
+
+	void add() {
+		if (fullOrEmpty() != 2) {
+			inputArg();
+			myQueue[tail] = arg;
+			tail += 1;
+			add_opetations_value += 1;
+			headAndTailCheck();
+		}
+	}
+
+	void del() {
+		if (fullOrEmpty() != 1) {
+			myQueue[head] = '/0';
+			head += 1;
+			del_opetations_value += 1;
+		}
+	}
+
+	void printQueue() {
+		stringstream sstr;
+		for (int i = 0; i < maxArray; i++) {
+			if (myQueue[i] == '/0')
+				sstr << "Пусто ";
+			else
+				sstr << myQueue[i] << " ";
+		}
+		output(sstr.str());
+	}
+};
+
+class SafeMatrix {
+private:
+	int matrix[maxmatrixX][maxMatrixY];
+	int limitX, limitY;
+
+	bool check_borders(int borderX, int borderY) {
+		if (borderX > limitX || borderY > limitY) {
+			output("Выход за пределы массива");
+			return false;
+		}
+		else
+			return true;
+	}
+
+public:
+	SafeMatrix(int sizeX, int sizeY) {
+		limitX = sizeX - 1;
+		limitY = sizeY - 1;
+		for (int counterX = 0; counterX <= limitX; counterX++) {
+			for (int counterY = 0; counterY <= limitY; counterY++) {
+				matrix[counterX][counterY] = NULL;
+			}
+		}
+	}
+
+	void matrix_input(int x, int y, int num) {
+		if(check_borders(x, y) == true)
+			matrix[x][y] = num;
+	}
+
+	void matrix_output_part(int x, int y) {
+		if (check_borders(x, y) == true)
+			output(matrix[x][y]);
+	}
+
+	void matrix_output_full() {
+		string temp;
+		for (int counterX = 0; counterX <= limitX; counterX++) {
+			stringstream line;
+			for (int counterY = 0; counterY <= limitY; counterY++) {
+				line << matrix[counterX][counterY] << " ";
+				if (counterY == limitY) {
+					temp = line.str();
+					cout << temp;
+					cout << endl;
+				}
+			}
+		}
+	}
+};
+
+int maxint(int array[], int size) {
+	int maxNum = array[0];
+	int index = 0;
+	for (int i = 1; i < size; i++) {
+		if (array[i] > maxNum) {
+			maxNum = array[i];
+			index = i;
+		}
+	}
+	return index;
+}
+
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	int WorkNumber;
+	int array[5];
+	int fractionsValue = 0;
+	int arrayNum = 0, offest = 0;
+	Fraction fractionArray[2];
+	Fraction myFraction;
+	Money mysMoney;
+	SafeArray sa(3, 0);
+	Queue q;
+	SafeMatrix sm(7, 7);
+	Fraction(1, 2);
+	Fraction(1, 2);
+	while (true)
+	{
+		cout << "1. Индекс наибольшего элемента массива\n"
+			<< "2. Среднее значение дробей в массиве\n"
+			<< "3. Денежки\n"
+			<< "4. Безопасный массив\n"
+			<< "5. Очередь\n"
+			<< "6. Безопасная матрица\n"
+			<< "7. Денежки\n"
+			<< "8.Ещё раз денежки\n"
+			<< "Выберете номер желаемой работы или любой иной символ для завершения работы: ";
+		cin >> WorkNumber;
+		switch (WorkNumber)
+		{
+		case 1:
+			for (int j = 0; j < 5; j++) {
+				array[j] = input(array[j], "Введите элемент массива: ");
+			}
+			output(maxint(array, 5));
+			clean();
+			break;
+		case 2:
+			myFraction = myFraction.AVG(createArray());
+			myFraction.printFraction(myFraction);
+			clean();
+			break;
+		case 3:
+			mysMoney.moneyInput();
+			output(mysMoney.moneyStrDouble());
+			clean();
+			break;
+		case 4:
+			sa.putel(input(offest, "Введите индекс: "),input(arrayNum, "Введите значение: "));
+			output(sa.getel(input(offest, "Введите индекс: ")));
+			clean();
+			break;
+		case 5:
+			for (int i = 0; i < 11; i++) {
+				q.add();
+			}
+			q.printQueue();
+			for (int u = 0; u < 11; u++) {
+				q.del();
+			}
+			q.del();
+			q.printQueue();
+			clean();
+			break;
+		case 6:
+			sm.matrix_input(2, 2, 2);
+			sm.matrix_output_part(2, 2);
+			sm.matrix_output_full();
+			clean();
+			break;
+		case 7:
+			output(mysMoney.ldtoms(00123123.0));
+			clean();
+			break;
+		case 8:
+			output(mysMoney.madd());
+			clean();
+			break;
+		default:
+			return 0;
+		}
+	}
+}
