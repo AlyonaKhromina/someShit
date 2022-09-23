@@ -1,0 +1,181 @@
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <Windows.h>
+
+using namespace std;
+
+struct adress {
+    string country;
+    string city;
+    string street;
+    int house;
+    string bilding;
+    int flat;
+};
+
+struct myData {
+    string name;
+    string birthDay;
+    adress adress;
+
+};
+
+bool dateIsCorrect(char* date, int size) {
+    if (size < 4 || size > 10)
+        return false;
+    for (int counter = 0; counter < size; counter++) {
+        if (date[counter] - '0' > 9 || date[counter] - '0' < 0 && date[counter] != '.' && date[counter] != '/')
+            return false;
+    }
+    return true;
+}
+
+bool dayAndMonthValueCheck(int day, int month) {
+    
+    return false;
+}
+
+string dateParse(string& bd) {
+    stringstream sstr;
+    string toReturn;
+    int num;
+    int ssize = bd.length();
+    char* charbd = new char[ssize + 1];
+    char correctDate[11]
+
+    bd.copy(charbd, ssize + 1);
+    charbd[bd.length()] = '\0';
+    num = charbd[0] - '0';
+
+    if (dateIsCorrect(charbd, ssize) == false) {
+        throw string("Некорректая дата.\n");
+    }
+
+    switch (ssize)
+    {
+    case 4:
+        sstr << 0 << charbd[0] << '.' << 0 << charbd[1] << ".20" << charbd[2] << charbd[3];
+        break;
+    case 6:
+        if ((charbd[1] == '.' || charbd[1] == '/') && (charbd[3] == '.' || charbd[3] == '/'))
+            sstr << 0 << charbd[0] << ".0" << charbd[2] << ".20" << charbd[4] << charbd[5];
+        else
+            sstr << charbd[0] << charbd[1] << '.' << charbd[2] << charbd[3] << ".20" << charbd[4] << charbd[5];
+        break;
+    case 8:
+        if ((charbd[2] == '.' || charbd[2] == '/') && (charbd[5] == '.' || charbd[5] == '/'))
+            sstr << charbd[0] << charbd[1] << '.' << charbd[3] << charbd[4] << ".20" << charbd[6] << charbd[7];
+        else
+            sstr << charbd[0] << charbd[1] << '.' << charbd[2] << charbd[3] << '.' <<
+            charbd[4] << charbd[5] << charbd[6] << charbd[7];
+        break;
+    case 10:
+        if (charbd[2] == '.' && charbd[5] == '.')
+            sstr << charbd;
+        else
+            sstr << charbd[0] << charbd[1] << '.' << charbd[3] << charbd[4] << '.' << charbd[6] <<
+            charbd[7] << charbd[8] << charbd[9];
+        break;
+    default:
+        throw string("Некоректная дата.\n");
+        break;
+    }
+    delete[] charbd;
+
+    correctDate[10] = '\0';
+    sstr.str().copy(correctDate, 10);
+    toReturn = correctDate;
+
+    return toReturn;
+}
+
+string capitalLetter(string s) {
+    char* correct = new char[s.length() + 1];
+    s.copy(correct, s.length());
+    correct[s.length()] = '\0';
+    int ascii = int(correct[0]);
+    if (ascii >= 97 && ascii <= 122 || ascii >= -32 && ascii <= -1) 
+        correct[0] = int(correct[0] - 32);
+    return correct;
+}
+
+adress adressCreator() {
+    adress myAdress;
+    stringstream sstr;
+    cout << "Введите страну: "; cin >> myAdress.country;
+    myAdress.country = capitalLetter(myAdress.country);
+    cout << "Введите город: "; cin >> myAdress.city;
+    myAdress.city = capitalLetter(myAdress.city);
+    cout << "Введите название улицы: "; cin >> myAdress.street;
+    myAdress.street = capitalLetter(myAdress.street);
+    cout << "Введите номер дома: "; cin >> myAdress.house;
+    cout << "Введите номер корпуса/строения (при отсутстви введите -)";
+    cin >> myAdress.bilding;
+    cout << "Введите номер квартиры: "; cin >> myAdress.flat;
+
+    return myAdress;
+}
+
+void showAll(vector<myData>& v) {
+    for (int i = 0; i < v.size(); i++) {
+        cout << "Номер элемента: " << i << endl;
+        cout << v[i].name << endl << v[i].birthDay << endl;
+        cout << v[i].adress.country << ", г." << v[i].adress.city << ", ул."
+            << v[i].adress.street << ", д." << v[i].adress.house;
+        if (v[i].adress.bilding != "-")
+            cout << ", стр." << v[i].adress.bilding;
+        cout << ", кв." << v[i].adress.flat << endl << endl;
+    }
+}
+
+DataBase createNew() {
+    myData newPerson;
+    cout << "Введите имя: "; cin >> newPerson.name;
+    newPerson.name = capitalLetter(newPerson.name);
+
+    while (1) {
+        cout << "Введите дату рождения: "; cin >> newPerson.birthDay;
+        try {
+            newPerson.birthDay = dateParse(newPerson.birthDay);
+            cout << newPerson.birthDay;
+            break;
+        }
+        catch (string err) {
+            cout << err;
+        }
+    }
+    newPerson.adress = adressCreator();
+    return newPerson;
+}
+
+
+
+int main()
+{ 
+    myData pers;
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    vector<myData> v;
+    int workNum;
+    while (1) {
+        system("pause");
+        system("cls");
+        cout << "1. Добавить данные\n2. Найти по данным\n3. Показать все данные"
+           << "\nВведите номер работы: ";
+        cin >> workNum;
+        switch (workNum)
+        {
+        case 1:
+            pers = createNew();
+            v.push_back(pers);
+            break;
+        case 2:
+
+        case 3:
+            showAll(v);
+        default:
+            break;
+        }
+    }
+}
