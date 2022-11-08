@@ -7,22 +7,22 @@
 
 using namespace std;
 
-struct TItem {
-    int num;
-    string data;
-    TItem *right, *left;
-    TItem() { num = 0; data = ""; right = nullptr; left = nullptr; }
+struct TItem { // из этой структуры строится дерево
+    int num; // ключ для поиска
+    string data; // какая то инфа
+    TItem *right, *left; // указатели на детей
+    TItem() { num = 0; data = ""; right = nullptr; left = nullptr; } // конструктор всё обнуляет
 };
 
-typedef TItem* TItemPtr;
+typedef TItem* TItemPtr; // просто чтобы работало
 
 class Tree {
 private:
-    int value;
-    TItem *node;
+    int value; // количество элементов
+    TItem *node; // основной корень
 
-    TItem** arrayCreator(TItem** v, TItem* n) {
-        if (n->left != nullptr) { v = arrayCreator(v, n->left); };
+    TItem** arrayCreator(TItem** v, TItem* n) { // из неоптимизированного дерева в массив
+        if (n->left != nullptr) { v = arrayCreator(v, n->left); }; // находим пустой элемент и записываем в него
         *v = n;
         v++;
         if (n->right != nullptr) { v = arrayCreator(v, n->right); };
@@ -30,38 +30,51 @@ private:
     }
 
     TItem** arrayRemoveItem(TItem** v, TItem* n, int removekey) {
-        if (n->left != nullptr) { v = arrayRemoveItem(v, n->left, removekey); };
-        if (n->num != removekey) {
-            *v = n;
+        if (n->left != nullptr) { v = arrayRemoveItem(v, n->left, removekey); }; // идём влево до тех пор, пока не найдём последний элемент
+        if (n->num != removekey) { // сравниваем ключ найденого элемента с ключом для удаления
+            *v = n; // если не совпал - добавляем элементв массив
             v++;
         }
-        if (n->right != nullptr) { v = arrayRemoveItem(v, n->right, removekey); };
+        if (n->right != nullptr) { v = arrayRemoveItem(v, n->right, removekey); }; // то же самое но в большую сторону 
         return v;
+    }
+    
+        TItemPtr TreeCreator(int min, int max, TItemPtr* arr) { // из массива в оптимизирпованное дерево
+        int current = (max + min + 1) / 2; // делим пополам
+        if (min == max) { // когда дерево построено минимальное будет равно максимальному
+            arr[current]->left = nullptr;
+            arr[current]->right = nullptr;
+        }
+        else {
+            arr[current]->left = current > min ? TreeCreator(min, current - 1, arr) : nullptr; // это if и то, что он должен выполнять и его else
+            arr[current]->right = current < max ? TreeCreator(current + 1, max, arr) : nullptr;
+            return arr[current];
+        }
     }
 
 public:
-    Tree() { node = nullptr; value = 0; }
+    Tree() { node = nullptr; value = 0; } // конструктор всё обнуляет
 
-    bool add(int arg, string data) {
-        TItem *myElem = new TItem;
-        myElem->num = arg;
+    bool add(int arg, string data) { // добавление
+        TItem *myElem = new TItem; // новый элемент
+        myElem->num = arg; // данные нового элемента
         myElem->data = data;
-        TItem *current;
-        if (node == nullptr) {
+        TItem *current; // элемент для пробежки
+        if (node == nullptr) { // если дерево пустое добавляем элемент в нод
             node = myElem;
-            value++;
+            value++; // увиличиваем колво элементов
             return true;
         }
 
         current = node;
         while (1) {
-            if (myElem->num > current->num) {
-                if (current->right == nullptr) {
-                    current->right = myElem;
+            if (myElem->num > current->num) { // сравниваем ключи
+                if (current->right == nullptr) { // если большая сторона пустая
+                    current->right = myElem; // добавляем элемент
                     value++;
-                    return true;
+                    return true; // выходим из функции
                 }
-                current = current->right;
+                current = current->right; // сдвишаем элемент для пробежки, если условие выше не выполнилось
             }
             else if (myElem->num < current->num) {
                 if (current->left == nullptr) {
@@ -77,13 +90,13 @@ public:
         }
     }
 
-    string findKey(int num) {
-        TItem *current = node;
+    string findKey(int num) { // поиск по ключу
+        TItem *current = node; // элемент для пробежки
         while (1) {
-            if (current->num == num) {
+            if (current->num == num) { // если ключи равны - возвращаем инфу
                 return current->data;
             }
-            else if (current->num < num) {
+            else if (current->num < num) { // сравниваем, двигаемся
                 current = current->right;
             }
             else {
@@ -92,27 +105,14 @@ public:
         }
     }
 
-    TItemPtr TreeCreator(int min, int max, TItemPtr* arr) {
-        int current = (max + min + 1) / 2;
-        if (min == max) {
-            arr[current]->left = nullptr;
-            arr[current]->right = nullptr;
-        }
-        else {
-            arr[current]->left = current > min ? TreeCreator(min, current - 1, arr) : nullptr;
-            arr[current]->right = current < max ? TreeCreator(current + 1, max, arr) : nullptr;
-            return arr[current];
-        }
-    }
-
-    void normalizeTree() {
+    void normalizeTree() { // оптимизация дерева
         TItemPtr* arr = new TItemPtr[value];
         arrayCreator(arr, node);
         node = TreeCreator(0, value - 1, arr);
     }
 
-    void remove(int num) {
-        TItemPtr* arr = new TItemPtr[value - 1];
+    void remove(int num) { // удаление
+        TItemPtr* arr = new TItemPtr[value - 1]; // создаём массив на один элемент меньше, чем в дереве
         arrayRemoveItem(arr, node, num);
         node = TreeCreator(0, value - 2, arr);
     }
@@ -157,23 +157,23 @@ int main()
         system("pause");
         cin >> temp;
         switch (temp) {
-        case 1:
+        case 1: // добавляем
             cin >> data;
             t.add(num, data);
             num++;
             break;
-        case 2:
+        case 2: // показываем
             show(t);
             break;
-        case 3: 
+        case 3:  // оптимизируем
             t.normalizeTree();
             break;
-        case 4:
+        case 4: // ищем
             int searchkey;
             cin >> searchkey;
             cout << t.findKey(searchkey) << endl;
             break;
-        case 5:
+        case 5: // удаляем элемент
             int delkey;
             cin >> delkey;
             t.remove(delkey);
