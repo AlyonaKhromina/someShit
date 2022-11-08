@@ -1,0 +1,185 @@
+#include <iostream>
+#include<Windows.h>
+#include <vector>
+#include <sstream>
+#include <stdlib.h>
+#include <fstream>
+
+using namespace std;
+
+struct TItem {
+    int num;
+    string data;
+    TItem *right, *left;
+    TItem() { num = 0; data = ""; right = nullptr; left = nullptr; }
+};
+
+typedef TItem* TItemPtr;
+
+class Tree {
+private:
+    int value;
+    TItem *node;
+
+    TItem** arrayCreator(TItem** v, TItem* n) {
+        if (n->left != nullptr) { v = arrayCreator(v, n->left); };
+        *v = n;
+        v++;
+        if (n->right != nullptr) { v = arrayCreator(v, n->right); };
+        return v;
+    }
+
+    TItem** arrayRemoveItem(TItem** v, TItem* n, int removekey) {
+        if (n->left != nullptr) { v = arrayRemoveItem(v, n->left, removekey); };
+        if (n->num != removekey) {
+            *v = n;
+            v++;
+        }
+        if (n->right != nullptr) { v = arrayRemoveItem(v, n->right, removekey); };
+        return v;
+    }
+
+public:
+    Tree() { node = nullptr; value = 0; }
+
+    bool add(int arg, string data) {
+        TItem *myElem = new TItem;
+        myElem->num = arg;
+        myElem->data = data;
+        TItem *current;
+        if (node == nullptr) {
+            node = myElem;
+            value++;
+            return true;
+        }
+
+        current = node;
+        while (1) {
+            if (myElem->num > current->num) {
+                if (current->right == nullptr) {
+                    current->right = myElem;
+                    value++;
+                    return true;
+                }
+                current = current->right;
+            }
+            else if (myElem->num < current->num) {
+                if (current->left == nullptr) {
+                    current->left = myElem;
+                    value++;
+                    return true;
+                }
+                current = current->left;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+
+    string findKey(int num) {
+        TItem *current = node;
+        while (1) {
+            if (current->num == num) {
+                return current->data;
+            }
+            else if (current->num < num) {
+                current = current->right;
+            }
+            else {
+                current = current->left;
+            }
+        }
+    }
+
+    TItemPtr TreeCreator(int min, int max, TItemPtr* arr) {
+        int current = (max + min + 1) / 2;
+        if (min == max) {
+            arr[current]->left = nullptr;
+            arr[current]->right = nullptr;
+        }
+        else {
+            arr[current]->left = current > min ? TreeCreator(min, current - 1, arr) : nullptr;
+            arr[current]->right = current < max ? TreeCreator(current + 1, max, arr) : nullptr;
+            return arr[current];
+        }
+    }
+
+    void normalizeTree() {
+        TItemPtr* arr = new TItemPtr[value];
+        arrayCreator(arr, node);
+        node = TreeCreator(0, value - 1, arr);
+    }
+
+    void remove(int num) {
+        TItemPtr* arr = new TItemPtr[value - 1];
+        arrayRemoveItem(arr, node, num);
+        node = TreeCreator(0, value - 2, arr);
+    }
+
+    TItem* getNode() {
+        return node;
+    }
+};
+
+void show(TItem* t, int offset) {
+    ofstream file;
+    file.open("save.test", ios::app);
+    stringstream sstr;
+    for (int i = offset; i > 0; i--) {
+        sstr << "   ";
+    }
+    cout << sstr.str() << t->num << ": " << t->data << endl;
+    //if (file.is_open()) {
+    //    file << sstr.str() << t->key << ": " << t->info << endl;
+    //}
+
+    if (t->left) {
+        show(t->left, offset + 1);
+    }
+    if (t->right) {
+        show(t->right, offset + 1);
+    }
+}
+
+void show(Tree t) {
+    show(t.getNode(), 0);
+}
+
+int main()
+{
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    int counter, num = 0, temp;
+    Tree t;
+    string data;
+    while (1) {
+        system("pause");
+        cin >> temp;
+        switch (temp) {
+        case 1:
+            cin >> data;
+            t.add(num, data);
+            num++;
+            break;
+        case 2:
+            show(t);
+            break;
+        case 3: 
+            t.normalizeTree();
+            break;
+        case 4:
+            int searchkey;
+            cin >> searchkey;
+            cout << t.findKey(searchkey) << endl;
+            break;
+        case 5:
+            int delkey;
+            cin >> delkey;
+            t.remove(delkey);
+        default:
+            break;
+        }
+    }
+    return 0;
+}
